@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Baúl Mágico - Tecnología, Blanquería y Bazar</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        magic: {
+                            50: '#fcf8f2',
+                            100: '#f7ede1',
+                            200: '#ebd7bc',
+                            300: '#e0c197',
+                            600: '#8c5825',
+                            750: '#5c310c',
+                            800: '#472509',
+                            900: '#331a06',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .magic-gradient {
+            background: linear-gradient(135deg, #472509 0%, #7c4815 50%, #5c310c 100%);
+        }
+    </style>
+</head>
+<body class="bg-amber-50/40 text-neutral-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-sm border-b border-amber-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo & Brand with 3-click Secret Admin Trigger -->
+                <div class="flex items-center gap-3">
+                    <div onclick="handleLogoClick()" class="flex items-center gap-3 group cursor-pointer select-none" title="El Baúl Mágico">
+                        <div class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden border-2 border-amber-400 shadow-md transform group-hover:scale-105 transition duration-300 magic-gradient flex items-center justify-center p-2">
+                            <!-- Custom SVG Logo: Baúl con Regalos -->
+                            <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow">
+                                <path d="M 15 55 L 85 55 L 80 85 L 20 85 Z" fill="#8c5825" stroke="#331a06" stroke-width="3"/>
+                                <path d="M 20 55 L 80 55 L 75 70 L 25 70 Z" fill="#5c310c"/>
+                                <rect x="30" y="60" width="8" height="15" fill="#facc15" rx="2"/>
+                                <rect x="62" y="60" width="8" height="15" fill="#facc15" rx="2"/>
+                                <path d="M 15 50 L 85 50 L 75 25 L 25 25 Z" fill="#a16207" stroke="#331a06" stroke-width="3"/>
+                                <path d="M 35 32 L 65 32 L 60 42 L 40 42 Z" fill="#facc15"/>
+                                <rect x="42" y="15" width="16" height="16" fill="#ef4444" rx="2"/>
+                                <line x1="50" y1="15" x2="50" y2="31" stroke="#facc15" stroke-width="3"/>
+                                <rect x="30" y="18" width="12" height="12" fill="#3b82f6" rx="2"/>
+                                <rect x="58" y="18" width="12" height="12" fill="#10b981" rx="2"/>
+                                <circle cx="20" cy="20" r="2" fill="#facc15"/>
+                                <circle cx="80" cy="18" r="2.5" fill="#facc15"/>
+                                <circle cx="50" cy="8" r="3" fill="#facc15"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="text-xl sm:text-2xl font-black text-amber-900 tracking-tight block">El Baúl Mágico</span>
+                            <span class="text-xs text-amber-700 font-medium tracking-wide">Tecnología • Blanquería • Bazar</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Menu -->
+                <nav class="hidden md:flex items-center gap-8 font-medium text-neutral-600">
+                    <a href="#inicio" class="text-amber-900 font-semibold hover:text-amber-600 transition">Inicio</a>
+                    <a href="#categorias" class="hover:text-amber-700 transition">Categorías</a>
+                    <a href="#catalogo" class="hover:text-amber-700 transition">Productos</a>
+                    <a href="#contacto" class="hover:text-amber-700 transition">Contacto</a>
+                </nav>
+
+                <!-- Actions (Search & Cart) -->
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <button onclick="toggleSearch()" class="p-2.5 text-amber-900 bg-amber-100/60 hover:bg-amber-200 rounded-full transition relative" title="Buscar productos">
+                        <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                    </button>
+                    
+                    <button onclick="toggleCart()" class="p-2.5 text-white magic-gradient hover:opacity-90 rounded-full shadow-md transition relative flex items-center justify-center w-11 h-11" title="Abrir carrito">
+                        <i class="fa-solid fa-bag-shopping text-lg"></i>
+                        <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white shadow-sm">0</span>
+                    </button>
+
+                    <!-- Mobile Menu Button -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-amber-900 hover:bg-amber-100 rounded-lg">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-amber-100 px-4 pt-2 pb-6 space-y-3 shadow-lg">
+            <a href="#inicio" onclick="toggleMobileMenu()" class="block py-2 text-amber-900 font-semibold border-b border-amber-50">Inicio</a>
+            <a href="#categorias" onclick="toggleMobileMenu()" class="block py-2 text-neutral-700 font-medium border-b border-amber-50">Categorías</a>
+            <a href="#catalogo" onclick="toggleMobileMenu()" class="block py-2 text-neutral-700 font-medium border-b border-amber-50">Productos</a>
+            <a href="#contacto" onclick="toggleMobileMenu()" class="block py-2 text-neutral-700 font-medium border-b border-amber-50">Contacto</a>
+        </div>
+
+        <!-- Search Bar Dropdown -->
+        <div id="search-bar-container" class="hidden bg-amber-50 border-t border-amber-200 py-3 px-4 transition-all">
+            <div class="max-w-3xl mx-auto flex items-center gap-2">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-amber-700"></i>
+                    <input type="text" id="searchInput" oninput="filterProducts()" placeholder="¿Qué tesoro estás buscando hoy? (ej. auriculares, sábanas, vajilla...)" class="w-full pl-10 pr-4 py-2.5 bg-white border border-amber-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-600 text-neutral-800 placeholder-neutral-400">
+                </div>
+                <button onclick="toggleSearch()" class="px-4 py-2.5 bg-amber-800 text-white rounded-xl font-medium hover:bg-amber-900">Cerrar</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <section id="inicio" class="relative overflow-hidden bg-gradient-to-b from-amber-100/70 via-amber-50/50 to-white py-12 lg:py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-6 text-center lg:text-left">
+                        <span class="inline-flex items-center gap-2 bg-amber-200/80 text-amber-900 text-xs sm:text-sm font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> Descubrí la magia en casa
+                        </span>
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-amber-950 tracking-tight leading-tight">
+                            Todo lo que imaginás en <span class="text-amber-700">El Baúl Mágico</span>
+                        </h1>
+                        <p class="text-lg text-neutral-600 max-w-xl mx-auto lg:mx-0">
+                            Sorprende tu hogar con nuestra selección exclusiva de tecnología, blanquería de alta gama y artículos de bazar. ¿Tenés dudas? ¡Escribinos directamente al WhatsApp!
+                        </p>
+                        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
+                            <a href="#catalogo" class="px-8 py-4 magic-gradient text-white font-bold rounded-2xl shadow-lg hover:shadow-xl hover:opacity-95 transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                                <i class="fa-solid fa-box-open"></i> Ver Catálogo Completo
+                            </a>
+                            <button onclick="openWhatsApp()" class="px-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-md transition flex items-center gap-2">
+                                <i class="fa-brands fa-whatsapp text-xl"></i> Consultar por WhatsApp
+                            </button>
+                        </div>
+                    </div>
+                    <div class="relative flex justify-center">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-amber-400 to-amber-600 rounded-3xl blur-lg opacity-30 animate-pulse"></div>
+                        <div class="relative bg-white p-6 rounded-3xl shadow-xl border border-amber-200 max-w-md w-full text-center flex flex-col items-center justify-center">
+                            <div class="w-48 h-48 rounded-3xl magic-gradient p-4 shadow-inner flex items-center justify-center mb-4 border border-amber-300">
+                                <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-lg">
+                                    <path d="M 15 55 L 85 55 L 80 85 L 20 85 Z" fill="#8c5825" stroke="#331a06" stroke-width="3"/>
+                                    <path d="M 20 55 L 80 55 L 75 70 L 25 70 Z" fill="#5c310c"/>
+                                    <rect x="30" y="60" width="8" height="15" fill="#facc15" rx="2"/>
+                                    <rect x="62" y="60" width="8" height="15" fill="#facc15" rx="2"/>
+                                    <path d="M 15 50 L 85 50 L 75 25 L 25 25 Z" fill="#a16207" stroke="#331a06" stroke-width="3"/>
+                                    <path d="M 35 32 L 65 32 L 60 42 L 40 42 Z" fill="#facc15"/>
+                                    <rect x="42" y="15" width="16" height="16" fill="#ef4444" rx="2"/>
+                                    <line x1="50" y1="15" x2="50" y2="31" stroke="#facc15" stroke-width="3"/>
+                                    <rect x="30" y="18" width="12" height="12" fill="#3b82f6" rx="2"/>
+                                    <rect x="58" y="18" width="12" height="12" fill="#10b981" rx="2"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-amber-950">¡El Baúl de los Tesoros!</h3>
+                            <p class="text-xs text-neutral-600 mt-1">Tecnología, blanquería y bazar en un solo lugar</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="categorias" class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-12">
+                    <h2 class="text-3xl font-extrabold text-amber-950">Nuestras Categorías Principales</h2>
+                    <p class="text-neutral-600 mt-2">Explora cada rincón de nuestro baúl de tesoros</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div onclick="filterByCategory('Tecnología')" class="group relative bg-amber-50/50 rounded-3xl overflow-hidden border border-amber-200 shadow-md hover:shadow-xl transition cursor-pointer p-6 flex flex-col justify-between">
+                        <div class="relative z-10">
+                            <span class="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-200/60 px-3 py-1 rounded-full">Innovación</span>
+                            <h3 class="text-2xl font-bold text-amber-950 mt-3">Tecnología</h3>
+                            <p class="text-neutral-600 text-sm mt-1">Smartphones, audio, smart TVs y gadgets de última generación.</p>
+                        </div>
+                        <div class="relative z-10 mt-6 overflow-hidden rounded-2xl h-48">
+                            <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&q=80&w=500" alt="Tecnología" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        </div>
+                        <div class="mt-4 flex items-center justify-between text-amber-900 font-bold text-sm">
+                            <span>Ver productos</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition"></i>
+                        </div>
+                    </div>
+
+                    <div onclick="filterByCategory('Blanquería')" class="group relative bg-amber-50/50 rounded-3xl overflow-hidden border border-amber-200 shadow-md hover:shadow-xl transition cursor-pointer p-6 flex flex-col justify-between">
+                        <div class="relative z-10">
+                            <span class="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-200/60 px-3 py-1 rounded-full">Confort</span>
+                            <h3 class="text-2xl font-bold text-amber-950 mt-3">Blanquería</h3>
+                            <p class="text-neutral-600 text-sm mt-1">Sábanas de lujo, acolchados, toallas y juegos de cama suaves.</p>
+                        </div>
+                        <div class="relative z-10 mt-6 overflow-hidden rounded-2xl h-48">
+                            <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&q=80&w=500" alt="Blanquería" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        </div>
+                        <div class="mt-4 flex items-center justify-between text-amber-900 font-bold text-sm">
+                            <span>Ver productos</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition"></i>
+                        </div>
+                    </div>
+
+                    <div onclick="filterByCategory('Bazar')" class="group relative bg-amber-50/50 rounded-3xl overflow-hidden border border-amber-200 shadow-md hover:shadow-xl transition cursor-pointer p-6 flex flex-col justify-between">
+                        <div class="relative z-10">
+                            <span class="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-200/60 px-3 py-1 rounded-full">Hogar</span>
+                            <h3 class="text-2xl font-bold text-amber-950 mt-3">Bazar</h3>
+                            <p class="text-neutral-600 text-sm mt-1">Vajilla artesanal, utensilios de cocina, decoración y accesorios.</p>
+                        </div>
+                        <div class="relative z-10 mt-6 overflow-hidden rounded-2xl h-48">
+                            <img src="https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&q=80&w=500" alt="Bazar" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        </div>
+                        <div class="mt-4 flex items-center justify-between text-amber-900 font-bold text-sm">
+                            <span>Ver productos</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="catalogo" class="py-16 bg-amber-50/40 border-t border-amber-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+                    <div>
+                        <span class="text-amber-700 font-bold text-sm tracking-wide uppercase">Catálogo Mágico</span>
+                        <h2 class="text-3xl font-extrabold text-amber-950 mt-1">Nuestros Tesoros Disponibles</h2>
+                    </div>
+
+                    <div id="filter-buttons" class="flex flex-wrap gap-2">
+                        <button onclick="filterByCategory('Todos')" class="category-btn active px-4 py-2 rounded-xl text-sm font-bold bg-amber-800 text-white shadow-sm transition">Todos</button>
+                        <button onclick="filterByCategory('Tecnología')" class="category-btn px-4 py-2 rounded-xl text-sm font-medium bg-white text-amber-900 border border-amber-200 hover:bg-amber-100 transition">Tecnología</button>
+                        <button onclick="filterByCategory('Blanquería')" class="category-btn px-4 py-2 rounded-xl text-sm font-medium bg-white text-amber-900 border border-amber-200 hover:bg-amber-100 transition">Blanquería</button>
+                        <button onclick="filterByCategory('Bazar')" class="category-btn px-4 py-2 rounded-xl text-sm font-medium bg-white text-amber-900 border border-amber-200 hover:bg-amber-100 transition">Bazar</button>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+
+                <!-- Empty State -->
+                <div id="no-products" class="hidden text-center py-16">
+                    <i class="fa-solid fa-box-open text-5xl text-amber-300 mb-4"></i>
+                    <h3 class="text-xl font-bold text-amber-900">No encontramos tesoros con ese filtro</h3>
+                    <p class="text-neutral-500 mt-1">Probá buscando con otras palabras o cambiando de categoría.</p>
+                    <button onclick="filterByCategory('Todos')" class="mt-4 px-6 py-2.5 magic-gradient text-white font-bold rounded-xl shadow-md">Ver todos los productos</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="contacto" class="bg-neutral-900 text-white border-t border-amber-900/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pb-12 border-b border-neutral-800">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-10 h-10 rounded-xl overflow-hidden border border-amber-400 magic-gradient flex items-center justify-center p-1">
+                            <svg viewBox="0 0 100 100" class="w-full h-full">
+                                <path d="M 15 55 L 85 55 L 80 85 L 20 85 Z" fill="#8c5825" stroke="#331a06" stroke-width="3"/>
+                                <path d="M 15 50 L 85 50 L 75 25 L 25 25 Z" fill="#a16207" stroke="#331a06" stroke-width="3"/>
+                            </svg>
+                        </div>
+                        <span class="text-lg font-bold text-amber-300">El Baúl Mágico</span>
+                    </div>
+                    <p class="text-sm text-neutral-400">Tu tienda de confianza en tecnología, blanquería y bazar.</p>
+                    <div class="flex gap-3 text-amber-400 text-lg">
+                        <button onclick="openWhatsApp()" class="hover:text-white transition"><i class="fa-brands fa-whatsapp"></i></button>
+                        <a href="#" class="hover:text-white transition"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="hover:text-white transition"><i class="fa-brands fa-facebook"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-wider text-amber-300 mb-4">Enlaces Rápidos</h4>
+                    <ul class="space-y-2 text-sm text-neutral-400">
+                        <li><a href="#inicio" class="hover:text-white transition">Inicio</a></li>
+                        <li><a href="#categorias" class="hover:text-white transition">Categorías</a></li>
+                        <li><a href="#catalogo" class="hover:text-white transition">Catálogo</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-wider text-amber-300 mb-4">Categorías</h4>
+                    <ul class="space-y-2 text-sm text-neutral-400">
+                        <li><a href="#catalogo" onclick="filterByCategory('Tecnología')" class="hover:text-white transition">Tecnología</a></li>
+                        <li><a href="#catalogo" onclick="filterByCategory('Blanquería')" class="hover:text-white transition">Blanquería</a></li>
+                        <li><a href="#catalogo" onclick="filterByCategory('Bazar')" class="hover:text-white transition">Bazar</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-500 gap-4">
+                <p>&copy; 2026 El Baúl Mágico. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp Button -->
+    <button onclick="openWhatsApp()" class="fixed bottom-6 left-6 z-50 bg-emerald-600 hover:bg-emerald-700 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-3xl transition transform hover:scale-110" title="Consultar por WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </button>
+
+    <!-- Cart Drawer -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden hidden">
+        <div onclick="toggleCart()" class="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm transition-opacity"></div>
+        <div class="absolute inset-y-0 right-0 max-w-full flex pl-10">
+            <div class="w-screen max-w-md bg-white shadow-2xl flex flex-col justify-between">
+                <div class="p-6 border-b border-amber-100 flex items-center justify-between magic-gradient text-white">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-bag-shopping text-xl"></i>
+                        <h3 class="text-lg font-bold">Tu Carrito Mágico</h3>
+                    </div>
+                    <button onclick="toggleCart()" class="p-2 text-white/80 hover:text-white rounded-lg"><i class="fa-solid fa-xmark text-xl"></i></button>
+                </div>
+                <div id="cart-items-container" class="flex-1 overflow-y-auto p-6 space-y-4 divide-y divide-amber-100"></div>
+                <div class="p-6 border-t border-amber-100 bg-amber-50/50 space-y-4">
+                    <div class="flex justify-between items-center text-lg font-bold text-amber-950">
+                        <span>Total:</span>
+                        <span id="cart-total">$0</span>
+                    </div>
+                    <button onclick="openCheckout()" class="w-full py-3.5 magic-gradient text-white font-bold rounded-2xl shadow-lg hover:opacity-95 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-lock"></i> <span>Iniciar Compra Segura</span>
+                    </button>
+                    <button onclick="openWhatsAppWithCart()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow transition flex items-center justify-center gap-2 text-sm">
+                        <i class="fa-brands fa-whatsapp text-lg"></i> Enviar pedido por WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Modal -->
+    <div id="admin-modal" class="fixed inset-0 z-50 overflow-y-auto hidden flex items-center justify-center p-4">
+        <div onclick="closeAdminModal()" class="fixed inset-0 bg-neutral-900/70 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-amber-200 z-10 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-4 border-b border-amber-100 mb-6">
+                <h3 class="text-xl font-bold text-amber-950"><i class="fa-solid fa-gear text-amber-600 mr-2"></i> Panel de Administración Secreto</h3>
+                <button onclick="closeAdminModal()" class="p-2 text-neutral-400 hover:text-neutral-700"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div id="admin-login-box" class="space-y-4">
+                <p class="text-sm text-neutral-600">Ingresa tus datos de acceso para administrar la tienda:</p>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">Usuario</label>
+                    <input type="text" id="admin-user-login" placeholder="Ingresa tu usuario" class="w-full px-4 py-2.5 bg-amber-50/50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-600 mb-3">
+                    
+                    <label class="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">Contraseña</label>
+                    <input type="password" id="admin-pass" placeholder="••••••••" class="w-full px-4 py-2.5 bg-amber-50/50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-600">
+                </div>
+                <button onclick="verifyAdmin()" class="w-full py-3 magic-gradient text-white font-bold rounded-2xl shadow transition">Acceder al Panel</button>
+            </div>
+
+            <div id="admin-content-box" class="hidden space-y-6">
+                <!-- Change Credentials Section -->
+                <div class="bg-amber-100/50 p-4 rounded-2xl border border-amber-200">
+                    <h4 class="font-bold text-amber-950 mb-2"><i class="fa-solid fa-user-shield text-amber-700 mr-1"></i> Cambiar Usuario y Contraseña</h4>
+                    <p class="text-xs text-neutral-600 mb-3">Actualiza tus credenciales de acceso para mayor seguridad:</p>
+                    <div class="space-y-3">
+                        <input type="text" id="new-admin-user" placeholder="Nuevo usuario" class="w-full px-3 py-2 bg-white border border-amber-300 rounded-xl text-sm">
+                        <input type="password" id="new-admin-pass" placeholder="Nueva contraseña" class="w-full px-3 py-2 bg-white border border-amber-300 rounded-xl text-sm">
+                        <button onclick="saveAdminCredentials()" class="w-full py-2 bg-amber-800 text-white font-bold rounded-xl text-sm hover:bg-amber-900 transition">Actualizar Credenciales</button>
+                    </div>
+                </div>
+
+                <!-- Change WhatsApp Number Section -->
+                <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200">
+                    <h4 class="font-bold text-emerald-950 mb-2"><i class="fa-brands fa-whatsapp text-emerald-600 mr-1"></i> Configurar Número de WhatsApp</h4>
+                    <p class="text-xs text-neutral-600 mb-3">Ingresa tu número con código de país y área (Ej: <code>5492268404422</code> sin símbolos ni espacios):</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="admin-whatsapp-input" placeholder="5492268404422" class="flex-1 px-3 py-2 bg-white border border-emerald-300 rounded-xl text-sm">
+                        <button onclick="saveWhatsAppNumber()" class="px-4 py-2 bg-emerald-600 text-white font-bold rounded-xl text-sm hover:bg-emerald-700 transition">Guardar Número</button>
+                    </div>
+                </div>
+
+                <!-- Add New Product Section -->
+                <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200">
+                    <h4 class="font-bold text-amber-950 mb-2"><i class="fa-solid fa-plus-circle text-amber-700 mr-1"></i> Agregar Nuevo Producto (Sube tu imagen)</h4>
+                    <form onsubmit="addNewProduct(event)" class="space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <input type="text" id="new-name" placeholder="Nombre del producto" required class="px-3 py-2 bg-white border border-amber-200 rounded-xl text-sm">
+                            <select id="new-cat" class="px-3 py-2 bg-white border border-amber-200 rounded-xl text-sm">
+                                <option>Tecnología</option>
+                                <option>Blanquería</option>
+                                <option>Bazar</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <input type="number" id="new-price" placeholder="Precio ($)" required class="px-3 py-2 bg-white border border-amber-200 rounded-xl text-sm">
+                            <div>
+                                <label class="block text-xs text-neutral-500 mb-1 font-medium">Seleccionar foto de tu dispositivo:</label>
+                                <input type="file" id="new-file" accept="image/*" required class="w-full text-xs text-neutral-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-800 file:text-white hover:file:bg-amber-900 cursor-pointer">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full py-2.5 bg-amber-800 text-white font-bold rounded-xl text-sm hover:bg-amber-900 transition">Publicar Producto en la Tienda</button>
+                    </form>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-amber-950 mb-3">Productos Actuales</h4>
+                    <div id="admin-product-list" class="space-y-2 max-h-60 overflow-y-auto pr-2"></div>
+                </div>
+
+                <!-- Close Admin Button inside panel -->
+                <div class="pt-4 border-t border-amber-100 flex justify-end">
+                    <button onclick="closeAdminModal()" class="px-6 py-2.5 bg-neutral-200 hover:bg-neutral-300 text-neutral-800 font-bold rounded-xl text-sm transition flex items-center gap-2">
+                        <i class="fa-solid fa-xmark"></i> Cerrar Panel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="fixed inset-0 z-50 overflow-y-auto hidden flex items-center justify-center p-4">
+        <div onclick="closeCheckout()" class="fixed inset-0 bg-neutral-900/70 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-amber-200 z-10">
+            <div class="flex justify-between items-center pb-4 border-b border-amber-100 mb-6">
+                <h3 class="text-xl font-bold text-amber-950"><i class="fa-solid fa-shield-halved text-amber-600 mr-2"></i> Finalizar Compra</h3>
+                <button onclick="closeCheckout()" class="p-2 text-neutral-400 hover:text-neutral-700"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="submitOrder(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">Nombre y Apellido</label>
+                    <input type="text" required placeholder="Ej. María Gómez" class="w-full px-4 py-2.5 bg-amber-50/50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">Dirección / Localidad</label>
+                    <input type="text" required placeholder="Calle 123, Ciudad" class="w-full px-4 py-2.5 bg-amber-50/50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-600">
+                </div>
+                <div class="pt-2 flex gap-3">
+                    <button type="submit" class="flex-1 py-3.5 magic-gradient text-white font-bold rounded-2xl shadow-lg hover:opacity-95 transition">
+                        Confirmar Pedido ✨
+                    </button>
+                    <button type="button" onclick="openWhatsAppWithCart()" class="px-4 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow transition flex items-center justify-center">
+                        <i class="fa-brands fa-whatsapp text-xl"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 bg-amber-950 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-amber-500/40">
+        <i class="fa-solid fa-circle-check text-amber-400 text-xl"></i>
+        <div>
+            <h4 class="font-bold text-sm" id="toast-title">¡Acción realizada!</h4>
+            <p class="text-xs text-amber-200" id="toast-desc">Cambios guardados correctamente.</p>
+        </div>
+    </div>
+
+    <script>
+        // WhatsApp & Credentials Config (Editable via Admin)
+        let whatsappNumber = localStorage.getItem('baul_whatsapp') || "5492268404422";
+        let adminUser = localStorage.getItem('baul_admin_user') || "admin";
+        let adminPass = localStorage.getItem('baul_admin_pass') || "magia123";
+
+        // Initial Products Database
+        let products = [
+            {
+                id: 1,
+                name: "Smartphone Pro Max 5G",
+                category: "Tecnología",
+                price: 389990,
+                image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=500",
+                badge: "Más Vendido"
+            },
+            {
+                id: 2,
+                name: "Auriculares Inalámbricos Hi-Fi",
+                category: "Tecnología",
+                price: 45990,
+                image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=500",
+                badge: "Oferta"
+            },
+            {
+                id: 3,
+                name: "Smart TV 50\" 4K UHD",
+                category: "Tecnología",
+                price: 299990,
+                image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&q=80&w=500",
+                badge: "Nuevo"
+            },
+            {
+                id: 4,
+                name: "Juego de Sábanas de Lujo (King Size)",
+                category: "Blanquería",
+                price: 42990,
+                image: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&q=80&w=500",
+                badge: "Popular"
+            },
+            {
+                id: 5,
+                name: "Acolchado Soft Estampado c/ Corderito",
+                category: "Blanquería",
+                price: 54990,
+                image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&q=80&w=500",
+                badge: "Recomendado"
+            },
+            {
+                id: 6,
+                name: "Juego de Toallas y Toallones 500g",
+                category: "Blanquería",
+                price: 22990,
+                image: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&q=80&w=500",
+                badge: ""
+            },
+            {
+                id: 7,
+                name: "Vajilla de Cerámica Artesanal (16 pzs)",
+                category: "Bazar",
+                price: 68990,
+                image: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&q=80&w=500",
+                badge: "Exclusivo"
+            },
+            {
+                id: 8,
+                name: "Set de Cuchillos Profesionales c/ Cestillo",
+                category: "Bazar",
+                price: 31990,
+                image: "https://images.unsplash.com/photo-1593618998160-e34014e67546?auto=format&fit=crop&q=80&w=500",
+                badge: ""
+            }
+        ];
+
+        let cart = [];
+        let currentCategory = 'Todos';
+
+        // WhatsApp trigger helper
+        function openWhatsApp(customText = "¡Hola! Me gustaría hacer una consulta general en El Baúl Mágico") {
+            const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(customText)}`;
+            window.open(url, '_blank');
+        }
+
+        function openWhatsAppWithCart() {
+            if (cart.length === 0) {
+                openWhatsApp("¡Hola! Me gustaría hacer una consulta general en El Baúl Mágico");
+                return;
+            }
+            let text = "¡Hola! Me gustaría realizar el siguiente pedido en El Baúl Mágico:\n\n";
+            let total = 0;
+            cart.forEach(item => {
+                text += `• ${item.quantity}x ${item.name} ($${(item.price * item.quantity).toLocaleString()})\n`;
+                total += item.price * item.quantity;
+            });
+            text += `\n*Total a abonar: $${total.toLocaleString()}*`;
+            openWhatsApp(text);
+        }
+
+        // Secret Admin trigger with 3 clicks on logo
+        let logoClicks = 0;
+        let logoTimer = null;
+        function handleLogoClick() {
+            logoClicks++;
+            if (logoClicks === 3) {
+                clearTimeout(logoTimer);
+                logoClicks = 0;
+                openAdminModal();
+            } else {
+                clearTimeout(logoTimer);
+                logoTimer = setTimeout(() => { logoClicks = 0; }, 1000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts(products);
+        });
+
+        function renderProducts(items) {
+            const grid = document.getElementById('product-grid');
+            const noProducts = document.getElementById('no-products');
+            grid.innerHTML = '';
+
+            if (items.length === 0) {
+                noProducts.classList.remove('hidden');
+                return;
+            } else {
+                noProducts.classList.add('hidden');
+            }
+
+            items.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'group bg-white rounded-3xl border border-amber-200/80 shadow-sm hover:shadow-xl transition flex flex-col justify-between overflow-hidden relative';
+                card.innerHTML = `
+                    <div>
+                        <div class="relative overflow-hidden h-60 bg-amber-50">
+                            ${product.badge ? `<span class="absolute top-3 left-3 z-10 bg-amber-900 text-amber-100 text-xs font-bold px-3 py-1 rounded-full shadow-md">${product.badge}</span>` : ''}
+                            <img src="${product.image}" onerror="this.src='https://placehold.co/400x400/472509/f3e7c4?text=Producto'" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        </div>
+                        <div class="p-5">
+                            <span class="text-xs font-bold uppercase tracking-wider text-amber-700">${product.category}</span>
+                            <h3 class="text-lg font-bold text-amber-950 mt-1 line-clamp-1">${product.name}</h3>
+                            <div class="flex items-baseline gap-2 mt-3">
+                                <span class="text-xl font-black text-amber-900">$${product.price.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-5 pt-0 flex gap-2">
+                        <button onclick="addToCart(${product.id})" class="flex-1 py-3 magic-gradient text-white font-bold rounded-2xl shadow-md hover:opacity-95 transition flex items-center justify-center gap-2 text-sm">
+                            <i class="fa-solid fa-cart-plus"></i> Añadir
+                        </button>
+                        <button onclick="openWhatsApp('¡Hola! Me interesa consultar por el producto: ${product.name} ($${product.price.toLocaleString()})')" class="px-3 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl shadow transition flex items-center justify-center" title="Consultar por WhatsApp">
+                            <i class="fa-brands fa-whatsapp text-lg"></i>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterByCategory(category) {
+            currentCategory = category;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                if (btn.textContent.trim() === category) {
+                    btn.className = 'category-btn active px-4 py-2 rounded-xl text-sm font-bold bg-amber-800 text-white shadow-sm transition';
+                } else {
+                    btn.className = 'category-btn px-4 py-2 rounded-xl text-sm font-medium bg-white text-amber-900 border border-amber-200 hover:bg-amber-100 transition';
+                }
+            });
+
+            if (category === 'Todos') {
+                renderProducts(products);
+            } else {
+                const filtered = products.filter(p => p.category === category);
+                renderProducts(filtered);
+            }
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = products.filter(p => 
+                p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query)
+            );
+            renderProducts(filtered);
+        }
+
+        function toggleSearch() {
+            const searchBar = document.getElementById('search-bar-container');
+            searchBar.classList.toggle('hidden');
+            if (!searchBar.classList.contains('hidden')) {
+                document.getElementById('searchInput').focus();
+            }
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        function toggleCart() {
+            document.getElementById('cart-drawer').classList.toggle('hidden');
+            renderCartItems();
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+
+            updateCartBadge();
+            showToast("¡Tesoro añadido!", `Añadiste "${product.name}" al carrito.`);
+        }
+
+        function updateCartBadge() {
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cart-badge').textContent = totalCount;
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cart-items-container');
+            const totalContainer = document.getElementById('cart-total');
+            container.innerHTML = '';
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-neutral-400">
+                        <i class="fa-solid fa-bag-shopping text-4xl mb-3 text-amber-200"></i>
+                        <p class="font-medium">Tu carrito está vacío</p>
+                        <p class="text-xs mt-1">¡Añade productos para comenzar!</p>
+                    </div>
+                `;
+                totalContainer.textContent = '$0';
+                return;
+            }
+
+            let totalPrice = 0;
+            cart.forEach((item, index) => {
+                totalPrice += item.price * item.quantity;
+                const div = document.createElement('div');
+                div.className = 'flex items-center gap-4 py-4';
+                div.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-xl border border-amber-200">
+                    <div class="flex-1">
+                        <h4 class="font-bold text-amber-950 text-sm line-clamp-1">${item.name}</h4>
+                        <p class="text-xs text-amber-700 font-semibold">$${item.price.toLocaleString()} c/u</p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <button onclick="decreaseQty(${index})" class="w-6 h-6 bg-amber-100 rounded-lg text-amber-900 font-bold">-</button>
+                            <span class="text-sm font-bold">${item.quantity}</span>
+                            <button onclick="increaseQty(${index})" class="w-6 h-6 bg-amber-100 rounded-lg text-amber-900 font-bold">+</button>
+                        </div>
+                    </div>
+                    <button onclick="removeItem(${index})" class="text-neutral-400 hover:text-red-600 p-2"><i class="fa-solid fa-trash-can"></i></button>
+                `;
+                container.appendChild(div);
+            });
+            totalContainer.textContent = `$${totalPrice.toLocaleString()}`;
+        }
+
+        function increaseQty(index) { cart[index].quantity += 1; renderCartItems(); updateCartBadge(); }
+        function decreaseQty(index) {
+            if (cart[index].quantity > 1) { cart[index].quantity -= 1; } else { cart.splice(index, 1); }
+            renderCartItems(); updateCartBadge();
+        }
+        function removeItem(index) { cart.splice(index, 1); renderCartItems(); updateCartBadge(); }
+
+        function openCheckout() {
+            if (cart.length === 0) { showToast("Carrito vacío", "Agrega al menos un producto.", true); return; }
+            toggleCart();
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+        function closeCheckout() { document.getElementById('checkout-modal').classList.add('hidden'); }
+        function submitOrder(event) {
+            event.preventDefault();
+            closeCheckout();
+            cart = [];
+            updateCartBadge();
+            showToast("¡Pedido Exitoso! ✨", "Gracias por comprar en El Baúl Mágico.");
+        }
+
+        // Admin Management functions
+        function openAdminModal() { 
+            document.getElementById('admin-modal').classList.remove('hidden');
+            document.getElementById('admin-whatsapp-input').value = whatsappNumber;
+            document.getElementById('admin-user-login').value = '';
+            document.getElementById('admin-pass').value = '';
+        }
+        function closeAdminModal() { 
+            document.getElementById('admin-modal').classList.add('hidden');
+            document.getElementById('admin-login-box').classList.remove('hidden');
+            document.getElementById('admin-content-box').classList.add('hidden');
+        }
+        
+        function verifyAdmin() {
+            const inputUser = document.getElementById('admin-user-login').value.trim();
+            const inputPass = document.getElementById('admin-pass').value.trim();
+            if (inputUser === adminUser && inputPass === adminPass) {
+                document.getElementById('admin-login-box').classList.add('hidden');
+                document.getElementById('admin-content-box').classList.remove('hidden');
+                document.getElementById('new-admin-user').value = adminUser;
+                document.getElementById('new-admin-pass').value = '';
+                renderAdminProductList();
+                showToast("Acceso Concedido", "Ya puedes gestionar tus productos y credenciales.");
+            } else {
+                showToast("Usuario o contraseña incorrectos", "Verifica tus datos.", true);
+            }
+        }
+
+        function saveAdminCredentials() {
+            const u = document.getElementById('new-admin-user').value.trim();
+            const p = document.getElementById('new-admin-pass').value.trim();
+            if (u && p) {
+                adminUser = u;
+                adminPass = p;
+                localStorage.setItem('baul_admin_user', u);
+                localStorage.setItem('baul_admin_pass', p);
+                showToast("¡Credenciales Actualizadas!", "Tu nuevo usuario y contraseña se guardaron con éxito.");
+            } else {
+                showToast("Error", "Completa ambos campos.", true);
+            }
+        }
+
+        function saveWhatsAppNumber() {
+            const num = document.getElementById('admin-whatsapp-input').value.trim();
+            if (num) {
+                whatsappNumber = num;
+                localStorage.setItem('baul_whatsapp', num);
+                showToast("¡WhatsApp Actualizado!", "El nuevo número ya está configurado.");
+            } else {
+                showToast("Error", "Ingresa un número válido.", true);
+            }
+        }
+
+        function renderAdminProductList() {
+            const list = document.getElementById('admin-product-list');
+            list.innerHTML = '';
+            products.forEach(p => {
+                const row = document.createElement('div');
+                row.className = 'flex items-center justify-between bg-amber-50/60 p-3 rounded-xl border border-amber-200 text-sm';
+                row.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <img src="${p.image}" class="w-10 h-10 object-cover rounded-lg">
+                        <div>
+                            <p class="font-bold text-amber-950">${p.name}</p>
+                            <p class="text-xs text-amber-700">${p.category} - $${p.price.toLocaleString()}</p>
+                        </div>
+                    </div>
+                    <button onclick="deleteProduct(${p.id})" class="text-red-600 hover:text-red-800 p-2"><i class="fa-solid fa-trash"></i></button>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function addNewProduct(event) {
+            event.preventDefault();
+            const name = document.getElementById('new-name').value;
+            const category = document.getElementById('new-cat').value;
+            const price = parseFloat(document.getElementById('new-price').value);
+            const fileInput = document.getElementById('new-file');
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const newProd = {
+                        id: Date.now(),
+                        name, category, price,
+                        image: e.target.result,
+                        badge: "Nuevo"
+                    };
+                    products.unshift(newProd);
+                    filterByCategory(currentCategory);
+                    renderAdminProductList();
+                    event.target.reset();
+                    showToast("¡Producto Añadido!", "Se subió la imagen y actualizó el catálogo.");
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+
+        function deleteProduct(id) {
+            products = products.filter(p => p.id !== id);
+            filterByCategory(currentCategory);
+            renderAdminProductList();
+            showToast("Producto Eliminado", "Se removió del catálogo.");
+        }
+
+        function showToast(title, desc, isError = false) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-desc').textContent = desc;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => { toast.classList.add('translate-y-24', 'opacity-0'); }, 3500);
+        }
+    </script>
+</body>
+</html>
